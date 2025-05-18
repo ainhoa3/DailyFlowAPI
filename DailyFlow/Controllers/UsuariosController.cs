@@ -90,6 +90,7 @@ namespace BibliotecaAPI.Controllers.V1
                 return RetornarLoginIncorecto();
             }
         }
+        [Authorize]
         [HttpGet("RenovarToken")]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> RenovarToken()
         {
@@ -146,6 +147,7 @@ namespace BibliotecaAPI.Controllers.V1
 
             return usuariosDTO;
         }
+        [Authorize]
         [HttpGet("streak")]
         public async Task<ActionResult> Strike()
         {
@@ -158,7 +160,8 @@ namespace BibliotecaAPI.Controllers.V1
 
 
             return Ok(user.Streak);
-        }  
+        }
+        [Authorize]
         [HttpGet("AddStrike")]
         public async Task<ActionResult> AddStrike()
         {

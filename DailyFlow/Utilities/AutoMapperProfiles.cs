@@ -36,12 +36,15 @@ namespace DailyFlow.Utilities
 
             CreateMap<_Task, TaskDTO>()
                 .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DeuDate))
+                .ForMember(dest => dest.Environment, opt => opt.MapFrom(src => src._Environment))
                 .ForMember(dto => dto.Priority, config => config
                 .MapFrom(task => task.CalcualatePriority()));
             CreateMap<TaskDTO, _Task>()
-                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate));
+                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate))
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src.Environment));
 
             CreateMap<_Task, TaskPreviewDTO>()
+                 .ForMember(dest => dest.Environment, opt => opt.MapFrom(src => src._Environment))
                 .ForMember(dto => dto.Description, config => config
                     .MapFrom(task => DescriptionPreview(task.Description, descriptonPreviewMaxLength)))
                 .ForMember(dto => dto.Priority, config => config
@@ -49,14 +52,18 @@ namespace DailyFlow.Utilities
 
 
             CreateMap<_Task, TaskCreatingDTO>()
-                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DeuDate));
+                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DeuDate))
+                .ForMember(dest => dest.Environment, opt => opt.MapFrom(src => src._Environment));
             CreateMap<TaskCreatingDTO, _Task>()
-                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate));
+                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate))
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src.Environment));
 
             CreateMap<TaskUpdatingDTO, _Task>()
-                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate));
+                .ForMember(dest => dest.DeuDate, opt => opt.MapFrom(src => src.DueDate))
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src.Environment));
             CreateMap<_Task, TaskUpdatingDTO>()
-               .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DeuDate));
+               .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DeuDate))
+               .ForMember(dest => dest.Environment, opt => opt.MapFrom(src => src._Environment));
 
             // habits 
             CreateMap<HabitCreatingDTO, Habit>()

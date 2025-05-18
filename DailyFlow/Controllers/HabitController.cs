@@ -4,11 +4,13 @@ using DailyFlow.Data;
 using DailyFlow.DTOs;
 using DailyFlow.Entities;
 using DailyFlow.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DailyFlow.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("DailyFlow/Api/Habits")]
     public class HabitController : ControllerBase

@@ -7,8 +7,8 @@ namespace DailyFlow.Entities
 {
     public enum _Environment
     {
-        Work,
-        Personal
+      Personal,
+      Work
     }
     public class _Task
     {
