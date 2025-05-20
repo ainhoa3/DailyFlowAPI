@@ -38,7 +38,7 @@ namespace DailyFlow.Controllers
             {
                 return BadRequest();
             }
-
+            habitCreatingDTO.UserId = user.Id;
             var habit = mapper.Map<Habit>(habitCreatingDTO);
             context.Habits.Add(habit);
             await context.SaveChangesAsync();

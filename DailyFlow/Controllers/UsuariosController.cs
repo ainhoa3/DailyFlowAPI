@@ -38,9 +38,8 @@ namespace BibliotecaAPI.Controllers.V1
             this.mapper = mapper;
         }
 
-
+        [AllowAnonymous]
         [HttpPost("RegistroUsuario")]
-      
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Register(CredencialesUserDTO credencialesUserDTO)
         {
             var user = new User
@@ -69,6 +68,7 @@ namespace BibliotecaAPI.Controllers.V1
                 return ValidationProblem();
             }
         }
+        [AllowAnonymous]
         [HttpPost("LoginUsuario")] 
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Login(CredencialesUserDTO credencialesUserDTO)
         {
@@ -128,8 +128,19 @@ namespace BibliotecaAPI.Controllers.V1
             
             var expiracion = DateTime.UtcNow.AddDays(10);
 
-            var tokenDeSeguridad = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiracion);
-           
+            var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["llavejwt"]));
+
+            var creds = new SigningCredentials(llave, SecurityAlgorithms.HmacSha256);
+
+            var tokenDeSeguridad = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: expiracion,
+                signingCredentials: creds
+            );
+
+
             var token = new JwtSecurityTokenHandler().WriteToken(tokenDeSeguridad);
 
             return new RespuestaAutenticacionDTO

@@ -1,4 +1,3 @@
-using System.Text;
 using DailyFlow.Data;
 using DailyFlow.Entities;
 using DailyFlow.Services;
@@ -6,7 +5,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,37 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["llavejwt"])),
+        ClockSkew = TimeSpan.Zero,
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            var result = JsonSerializer.Serialize(new { error = "No autorizado" });
+            return context.Response.WriteAsync(result);
+        }
+    };
+});
+
+
 builder.Services.AddDataProtection();
 
 builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
@@ -33,26 +66,8 @@ builder.Services.AddIdentityCore<User>()
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 
-builder.Services.AddIdentity<User, IdentityRole>()
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
 
 builder.Services.AddHttpContextAccessor();//permite acceder al contexto http desde cualquier clase
-
-builder.Services.AddAuthentication().AddJwtBearer(opciones =>
-{
-    opciones.MapInboundClaims = false;// deshabilita que se cambie el nombre de un clame por otro que provee el entity
-    opciones.TokenValidationParameters = new TokenValidationParameters
-    {
-        // aqui especificamos los parametros a tener en cuenta a ala hora de validar un token
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["llavejwt"])),
-        ClockSkew = TimeSpan.Zero,// tiempo de espiracion del token
-    };
-});
 
 
 builder.Services.AddScoped<ServiciosUsers>(); // Registro del servicio ServiciosUsers
@@ -67,11 +82,10 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
+app.UseCors("AllowSpecificOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-app.UseCors("AllowSpecificOrigins");
 
 app.MapControllers();
 

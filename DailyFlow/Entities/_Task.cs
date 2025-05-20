@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.Xml;
 using DailyFlow.ConfigClasses;
+using Microsoft.VisualBasic;
 
 namespace DailyFlow.Entities
 {
@@ -31,11 +32,17 @@ namespace DailyFlow.Entities
 
         public User? User { get; set; }
 
-        public bool IsTodays() // todays tasks are the ones with todays deu date or tomorrows deudate
+        public bool IsTodays() // todays tasks are the ones with todays deu date or tomorrows deudate or the late ones
         {
             DateTime today = DateTime.Today;
-            return DeuDate == today || today.AddDays(1) == DeuDate;
+            bool todays = DeuDate == today || today.AddDays(1) == DeuDate;
+            return todays || IsLate();
 
+        }
+        public bool IsLate()// late tasks are the ones witch duedate is past but are steel not done
+        {
+            DateTime today = DateTime.Today;
+            return this.DeuDate.CompareTo(today) < 0;
         }
         public int DaysLeft()
         {
@@ -45,10 +52,11 @@ namespace DailyFlow.Entities
 
         public float CalcualatePriority()
         {
-
+            if (IsLate())
+            {
+                return 100;
+            }
             // constant values from app settings
-
-
             var configuration = new ConfigurationBuilder()
              .SetBasePath(Directory.GetCurrentDirectory())
              .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -59,15 +67,6 @@ namespace DailyFlow.Entities
 
             PriorityConsts priorityConsts = new PriorityConsts();
             configuration.GetSection("PriorityConsts").Bind(priorityConsts);
-
-
-            /*var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-            PriorityConsts priorityConsts = new PriorityConsts();
-            configuration.GetSection("PriorityConsts").Bind(priorityConsts);*/
 
             // calculating urgency
             int urgency = 8 - DaysLeft();
@@ -112,7 +111,7 @@ namespace DailyFlow.Entities
             // normalizing porcentage
 
             priority = (priority / maxPorcentage) * 100;
-
+            
             return priority;
         }
     }

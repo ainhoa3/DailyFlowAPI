@@ -67,12 +67,21 @@ namespace DailyFlow.Utilities
 
             // habits 
             CreateMap<HabitCreatingDTO, Habit>()
-             .ForMember(habit => habit.LastDay, config => config.MapFrom(dto => dto.StartingDay));
+             .ForMember(habit => habit.LastDay, config => config.MapFrom(dto => dto.StartingDay))
+              .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
             CreateMap<HabitUpdatingDTO, Habit>()
-            .ForMember(habit => habit.LastDay, config => config.MapFrom(dto => dto.StartingDay));
+            .ForMember(habit => habit.LastDay, config => config.MapFrom(dto => dto.StartingDay))
+             .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
 
-            CreateMap<Habit, HabitCreatingDTO>().ReverseMap();
-            CreateMap<HabitUpdatingDTO, Habit>().ReverseMap();
+            CreateMap<Habit, HabitCreatingDTO>()
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
+            CreateMap<HabitUpdatingDTO, Habit>()
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
+            CreateMap<Habit, HabitDTO>()
+                 .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
+            CreateMap<HabitDTO, Habit>()
+                .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
+
         }
     }
 
