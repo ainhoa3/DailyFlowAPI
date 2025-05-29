@@ -5,9 +5,8 @@ namespace DailyFlow.Entities
     public class User : IdentityUser
     {
         public int Streak { get; set; }
+        public DateTime LastStreak { get; set; }
         public Preference Preference { get; set; }
-
-
     }
 
     public enum Preference

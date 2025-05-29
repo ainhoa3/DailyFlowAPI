@@ -103,7 +103,7 @@ namespace DailyFlow.Controllers
         [HttpPut("UpdateHabit/{id}")]
         public async Task<IActionResult> UpdateHabit(int id, HabitUpdatingDTO habitUpdatingDTO)
         {
-            var habit = await context.Habits.FindAsync(id);
+            var habit = await context.Habits.FirstOrDefaultAsync(t => t.Id == id);
             var user = await this.serviciosUsers.ObtenerUsuario();
             if (user is null)
             {
@@ -115,12 +115,40 @@ namespace DailyFlow.Controllers
                 return BadRequest();
             }
 
+
+            if (user.Id != habit.UserId)
+            {
+                return Forbid();
+            }
+
             mapper.Map(habitUpdatingDTO, habit);
             context.Habits.Update(habit);
             await context.SaveChangesAsync();
             return Ok(habit);
         }
-    }
+      
+        [HttpDelete("DeleteHabit/{id:int}")]
+        public async Task<ActionResult> DeleteHabit(int id)
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
 
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var habit = await context.Habits.FirstOrDefaultAsync(h => h.Id == id);
+
+            if (habit.UserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            context.Remove(user);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
     
 }

@@ -82,6 +82,9 @@ namespace DailyFlow.Utilities
             CreateMap<HabitDTO, Habit>()
                 .ForMember(dest => dest._Environment, opt => opt.MapFrom(src => src._Environment));
 
+            CreateMap<Streaks, StrikeDTO>().ForMember(s => s.date, config => config.MapFrom(dto => dto.date));
+            CreateMap<StrikeDTO, Streaks >().ForMember(dto => dto.date, config => config.MapFrom(s => s.date));
+
         }
     }
 

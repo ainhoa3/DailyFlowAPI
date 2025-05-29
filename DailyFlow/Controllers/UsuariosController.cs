@@ -42,6 +42,12 @@ namespace BibliotecaAPI.Controllers.V1
         [HttpPost("RegistroUsuario")]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Register(CredencialesUserDTO credencialesUserDTO)
         {
+            var emailExist = await context.Users.AnyAsync(x => x.Email == credencialesUserDTO.Email);
+            if (emailExist)
+            {
+                return BadRequest("Email already exists");
+            }
+
             var user = new User
             {
                 UserName = credencialesUserDTO.UserName,
@@ -183,9 +189,132 @@ namespace BibliotecaAPI.Controllers.V1
                 return BadRequest();
             }
 
+            if(user.LastStreak ==DateTime.Now)
+            {
+                NoContent();
+            }
             user.Streak += 1;
+            user.LastStreak = DateTime.Now;
+
+            var newStreak = new Streaks { date = DateTime.Now, streak = user.Streak, userId = user.Id };
+            context.Streaks.Add(newStreak);
 
             context.Users.Update(user);
+            await context.SaveChangesAsync();
+
+            return Ok(newStreak);
+        }
+        [Authorize]
+        [HttpPost("UpdateUserPreference")]
+        public async Task<ActionResult> UpdateUserPreference(UserUpdatingDTO userDTO)
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+            if (user.Id != userDTO.Id)
+            {
+                return Forbid();
+            }
+
+            if (userDTO.Username is not null)
+            {
+                user.UserName = userDTO.Username;
+            }
+
+            if (userDTO.UserEmail is not null)
+            {
+                var emailExist = await context.Users.AnyAsync(x => x.Email == userDTO.UserEmail);
+                if (emailExist)
+                {
+                    return BadRequest("Email already exists");
+                }
+                user.Email = userDTO.UserEmail;
+
+            }
+
+            if (userDTO.Preference is not null)
+            {
+                user.Preference = (Preference)userDTO.Preference;
+            }
+
+            
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("GetAllStrikes")]
+        public async Task<ActionResult> GetAllStrikes()
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var history = await context.Streaks.Where(s => s.userId == user.Id).ToListAsync();
+           
+            var srtreakDTOs = mapper.Map<IEnumerable<StrikeDTO>>(history);
+
+            return Ok(srtreakDTOs);
+        }
+
+        [Authorize]
+        [HttpGet("GetStrikesByMonth/{month:int}")]
+        public async Task<ActionResult> GetStrikesByMonth(int month)
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Month == month)
+                .ToListAsync();
+
+            var srtreakDTOs = mapper.Map<IEnumerable<StrikeDTO>>(history);
+
+            return Ok(srtreakDTOs);
+        }
+
+        [Authorize]
+        [HttpGet("GetStrikesByYear/{year:int}")]
+        public async Task<ActionResult> GetStrikesByYear(int year)
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Month == year)
+                .ToListAsync();
+
+            var srtreakDTOs = mapper.Map<IEnumerable<StrikeDTO>>(history);
+
+            return Ok(srtreakDTOs);
+        }
+
+        [Authorize]
+        [HttpDelete("DeleteUser")]
+        public async Task<ActionResult> DeleteUser()
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            context.Remove(user);
             await context.SaveChangesAsync();
 
             return NoContent();
