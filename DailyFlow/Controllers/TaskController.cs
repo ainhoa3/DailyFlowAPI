@@ -203,9 +203,9 @@ namespace DailyFlow.Controllers
                 return BadRequest();
             }
 
-            var habit = await context.Habits.FirstOrDefaultAsync(h => h.Id == id);
+            var task = await context.Tasks.FirstOrDefaultAsync(h => h.Id == id);
 
-            if (habit.UserId != user.Id)
+            if (task.UserId != user.Id)
             {
                 return Forbid();
             }
