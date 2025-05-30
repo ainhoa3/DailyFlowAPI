@@ -189,14 +189,39 @@ namespace BibliotecaAPI.Controllers.V1
                 return BadRequest();
             }
 
-            if(user.LastStreak ==DateTime.Now)
-            {
-                NoContent();
-            }
-            user.Streak += 1;
-            user.LastStreak = DateTime.Now;
+            var tasks = await context.Tasks
+               .Where(t => t.UserId == user.Id)
+               .ToListAsync();
 
-            var newStreak = new Streaks { date = DateTime.Now, streak = user.Streak, userId = user.Id };
+            var tasksForToday = tasks.Where(t => t.IsTodays()).ToList();
+
+            var habits = await context.Habits
+               .Where(h => h.UserId == user.Id)
+               .ToListAsync();
+            var habitsForToday = habits.Where(t => t.IsTodays()).ToList();
+
+            // no strike is added if ther has already been 1 added today or there are steel tasks for today not done or there are habits for today not done
+            if (user.LastStreak.Date == DateTime.Now.Date || tasksForToday.Any(t => t.Done != true) || habitsForToday.Any(t => t.Done != true))
+            {
+               return NoContent();
+            }
+            var newStreak = new Streaks();
+
+            //if last date + 1 day is earlyer than today that means that last date is not yestorday so that means that the streak has been broken the day ufter last date
+            if (user.LastStreak.Date.AddDays(1) < DateTime.Now.Date)
+            {
+                user.Streak = 0;
+                user.LastStreak = user.LastStreak.Date.AddDays(1);               
+                newStreak = new Streaks { date = user.LastStreak.Date.AddDays(1), streak = user.Streak, userId = user.Id };
+            }
+            else
+            {
+                user.Streak += 1;
+                user.LastStreak = DateTime.Now;
+                newStreak = new Streaks { date = DateTime.Now, streak = user.Streak, userId = user.Id };
+            }
+
+            
             context.Streaks.Add(newStreak);
 
             context.Users.Update(user);
