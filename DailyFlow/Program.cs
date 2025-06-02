@@ -89,6 +89,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
@@ -97,3 +99,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
