@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
 
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -17,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.AllowAnyOrigin()
               .AllowCredentials()
               .AllowAnyMethod()
               .AllowAnyHeader();
@@ -55,6 +58,10 @@ builder.Services.AddAuthentication(options =>
 
 
 builder.Services.AddDataProtection();
+
+
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
     opciones.UseSqlServer("name=DefaultConnection"));
