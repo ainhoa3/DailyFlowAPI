@@ -210,7 +210,7 @@ namespace DailyFlow.Controllers
                 return Forbid();
             }
 
-            context.Remove(user);
+            context.Remove(task);
             await context.SaveChangesAsync();
 
             return NoContent();

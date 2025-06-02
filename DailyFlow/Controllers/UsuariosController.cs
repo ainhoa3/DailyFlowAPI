@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BibliotecaAPI.Controllers.V1
 {
@@ -230,8 +231,8 @@ namespace BibliotecaAPI.Controllers.V1
             return Ok(newStreak);
         }
         [Authorize]
-        [HttpPost("UpdateUserPreference")]
-        public async Task<ActionResult> UpdateUserPreference(UserUpdatingDTO userDTO)
+        [HttpPost("UpdateUser")]
+        public async Task<ActionResult> UpdateUserPreferenc(UserUpdatingDTO userDTO)
         {
             var user = await serviciosUsers.ObtenerUsuario();
 
@@ -343,6 +344,20 @@ namespace BibliotecaAPI.Controllers.V1
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [Authorize]
+        [HttpGet("GetCurrentUser")]
+        public async Task<ActionResult> GetCurrentUser()
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(new UserUpdatingDTO { Id = user.Id, Preference = user.Preference, 
+                UserEmail = user.Email,Username = user.UserName});
         }
     }
 }
