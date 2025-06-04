@@ -211,17 +211,25 @@ namespace BibliotecaAPI.Controllers.V1
             //if last date + 1 day is earlyer than today that means that last date is not yestorday so that means that the streak has been broken the day ufter last date
             if (user.LastStreak.Date.AddDays(1) < DateTime.Now.Date)
             {
+                // Día en que se rompió la racha
+                var breakDate = user.LastStreak.Date.AddDays(1);
+
                 user.Streak = 0;
-                user.LastStreak = user.LastStreak.Date.AddDays(1);               
-                newStreak = new Streaks { date = user.LastStreak.Date.AddDays(1), streak = user.Streak, userId = user.Id };
-            }
-            else
-            {
-                user.Streak += 1;
-                user.LastStreak = DateTime.Now;
-                newStreak = new Streaks { date = DateTime.Now, streak = user.Streak, userId = user.Id };
+                user.LastStreak = breakDate;
+
+                var brokenStreak = new Streaks
+                {
+                    date = breakDate,
+                    streak = 0,
+                    userId = user.Id
+                };
+
+                context.Streaks.Add(brokenStreak);
             }
 
+            user.Streak += 1;
+            user.LastStreak = DateTime.Now;
+            newStreak = new Streaks { date = DateTime.Today, streak = user.Streak, userId = user.Id };
             
             context.Streaks.Add(newStreak);
 
