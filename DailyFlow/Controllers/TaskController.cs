@@ -56,7 +56,7 @@ namespace DailyFlow.Controllers
                 .ToListAsync();
 
             var filteredTasks = tasks.Where(t => t.IsTodays()).ToList();
-            var FilteredAndOrderedTasks = filteredTasks.OrderBy(t => t.CalcualatePriority()).ToList();
+            var FilteredAndOrderedTasks = filteredTasks.OrderByDescending(t => t.CalcualatePriority()).ToList();
 
             var previews = mapper.Map<IEnumerable<TaskPreviewDTO>>(FilteredAndOrderedTasks);
             return Ok(previews);
