@@ -191,13 +191,13 @@ namespace BibliotecaAPI.Controllers.V1
             }
 
             var tasks = await context.Tasks
-               .Where(t => t.UserId == user.Id)
+               .Where(t => t.UserId == user.Id && t.Done != true)
                .ToListAsync();
 
             var tasksForToday = tasks.Where(t => t.IsTodays()).ToList();
 
             var habits = await context.Habits
-               .Where(h => h.UserId == user.Id)
+               .Where(h => h.UserId == user.Id && h.Done != true)
                .ToListAsync();
             var habitsForToday = habits.Where(t => t.IsTodays()).ToList();
 
