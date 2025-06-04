@@ -292,8 +292,8 @@ namespace BibliotecaAPI.Controllers.V1
         }
 
         [Authorize]
-        [HttpGet("GetStrikesByMonth/{month:int}")]
-        public async Task<ActionResult> GetStrikesByMonth(int month)
+        [HttpGet("GetStrikesByMonth/{year:int}/{month:int}")]
+        public async Task<ActionResult> GetStrikesByMonth( int year, int month)
         {
             var user = await serviciosUsers.ObtenerUsuario();
 
@@ -302,7 +302,7 @@ namespace BibliotecaAPI.Controllers.V1
                 return BadRequest();
             }
 
-            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Month == month)
+            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Year == year && s.date.Month == month)
                 .ToListAsync();
 
             var srtreakDTOs = mapper.Map<IEnumerable<StrikeDTO>>(history);

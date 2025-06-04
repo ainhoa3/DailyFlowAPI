@@ -144,7 +144,7 @@ namespace DailyFlow.Controllers
                 return Forbid();
             }
 
-            context.Remove(user);
+            context.Remove(habit);
             await context.SaveChangesAsync();
 
             return NoContent();
