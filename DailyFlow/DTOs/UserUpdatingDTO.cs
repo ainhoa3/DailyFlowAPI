@@ -12,6 +12,6 @@ namespace DailyFlow.DTOs
         [EmailAddress]
         public string? UserEmail { get; set; }
 
-
+        public int? streak { get; set; }
     }
 }

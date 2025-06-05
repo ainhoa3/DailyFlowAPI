@@ -159,14 +159,7 @@ namespace BibliotecaAPI.Controllers.V1
             };
         }
 
-        [HttpGet("users")]
-        public async Task<IEnumerable<UserDTO>> Get()
-        {
-            var usuarios = await context.Users.ToListAsync();
-            var usuariosDTO = mapper.Map<IEnumerable<UserDTO>>(usuarios);
-
-            return usuariosDTO;
-        }
+        
         [Authorize]
         [HttpGet("streak")]
         public async Task<ActionResult> Strike()
@@ -367,7 +360,7 @@ namespace BibliotecaAPI.Controllers.V1
             }
 
             return Ok(new UserUpdatingDTO { Id = user.Id, Preference = user.Preference, 
-                UserEmail = user.Email,Username = user.UserName});
+                UserEmail = user.Email,Username = user.UserName, streak =user.Streak });
         }
     }
 }
