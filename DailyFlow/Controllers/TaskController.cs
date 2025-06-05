@@ -17,12 +17,14 @@ namespace DailyFlow.Controllers
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
         private readonly ServiciosUsers serviciosUsers;
+        private readonly TaskService taskService;
 
-        public TaskController(ApplicationDbContext context, IMapper mapper, ServiciosUsers serviciosUsers)
+        public TaskController(ApplicationDbContext context, IMapper mapper, ServiciosUsers serviciosUsers, TaskService taskService)
         {
             this.context = context;
             this.mapper = mapper;
             this.serviciosUsers = serviciosUsers;
+            this.taskService = taskService;
         }
 
         [HttpPost("NewTask")]
@@ -55,12 +57,13 @@ namespace DailyFlow.Controllers
                 .Where(t => t.UserId == user.Id)
                 .ToListAsync();
 
-            var filteredTasks = tasks.Where(t => t.IsTodays()).ToList();
+            var filteredTasks = taskService.TodaysTasks(tasks);
             var FilteredAndOrderedTasks = filteredTasks.OrderByDescending(t => t.CalcualatePriority()).ToList();
 
             var previews = mapper.Map<IEnumerable<TaskPreviewDTO>>(FilteredAndOrderedTasks);
             return Ok(previews);
         }
+
 
         [HttpGet("GetAtask/{id:int}")]
         public async Task<ActionResult<TaskDTO>> GetAtask(int id)
@@ -132,7 +135,7 @@ namespace DailyFlow.Controllers
                 .Where(t => t.UserId == user.Id)
                 .ToListAsync();
 
-            var filteredTasks = tasks.Where(t => t.DaysLeft() > 2 && t.DaysLeft() < 8)
+            var filteredTasks = tasks.Where(t => t.DaysLeft() >= 2 && t.DaysLeft() < 8)
                 // tasks from the day ufter tomorrow to a week(7 days) ufter
                 // tomorrow(8 days from today)
                 .OrderBy(t => t.CalcualatePriority()).ToList();

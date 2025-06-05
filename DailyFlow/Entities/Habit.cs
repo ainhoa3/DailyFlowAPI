@@ -18,7 +18,11 @@ namespace DailyFlow.Entities
         public bool IsTodays()
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            if(LastDay.AddDays(ProgrammDays) == today)
+
+            if (LastDay == today)
+                return true;
+
+            if (LastDay.AddDays(ProgrammDays) == today)
             {
                 this.LastDay = today;
                 return true;

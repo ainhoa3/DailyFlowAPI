@@ -79,6 +79,9 @@ builder.Services.AddHttpContextAccessor();//permite acceder al contexto http des
 
 builder.Services.AddScoped<ServiciosUsers>(); // Registro del servicio ServiciosUsers
 
+builder.Services.AddScoped<TaskService>(); // Registro del servicio TaskService
+
+
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 

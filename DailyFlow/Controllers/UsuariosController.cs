@@ -23,13 +23,14 @@ namespace BibliotecaAPI.Controllers.V1
         private readonly IConfiguration configuration;
         private readonly SignInManager<User> signInManager;
         private readonly ServiciosUsers serviciosUsers;
+        private readonly TaskService taskService;
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
 
 
         public UsuariosController(UserManager<User> userManager, IConfiguration configuration,
             SignInManager<User> signInManager, ServiciosUsers serviciosUsers,
-            ApplicationDbContext context, IMapper mapper)
+            ApplicationDbContext context, IMapper mapper, TaskService taskService)
         {
             this.userManager = userManager;
             this.configuration = configuration;
@@ -37,6 +38,7 @@ namespace BibliotecaAPI.Controllers.V1
             this.serviciosUsers = serviciosUsers;
             this.context = context;
             this.mapper = mapper;
+            this.taskService = taskService;
         }
 
         [AllowAnonymous]
@@ -194,12 +196,12 @@ namespace BibliotecaAPI.Controllers.V1
                .Where(t => t.UserId == user.Id && t.Done != true)
                .ToListAsync();
 
-            var tasksForToday = tasks.Where(t => t.IsTodays()).ToList();
+            var tasksForToday = taskService.TodaysTasks(tasks);
 
             var habits = await context.Habits
                .Where(h => h.UserId == user.Id && h.Done != true)
                .ToListAsync();
-            var habitsForToday = habits.Where(t => t.IsTodays()).ToList();
+            var habitsForToday = habits.Where(h => h.IsTodays()).ToList();
 
             // no strike is added if ther has already been 1 added today or there are steel tasks for today not done or there are habits for today not done
             if (user.LastStreak.Date == DateTime.Now.Date || tasksForToday.Any(t => t.Done != true) || habitsForToday.Any(t => t.Done != true))

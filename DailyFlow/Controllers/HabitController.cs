@@ -58,7 +58,7 @@ namespace DailyFlow.Controllers
                 .Where(h => h.UserId == user.Id)
                 .ToListAsync();
             var filteredHabits = habits.Where(t => t.IsTodays()).ToList();
-            var previews = mapper.Map<IEnumerable<HabitDTO>>(habits);
+            var previews = mapper.Map<IEnumerable<HabitDTO>>(filteredHabits);
             return Ok(previews);
         }
 
@@ -126,7 +126,29 @@ namespace DailyFlow.Controllers
             await context.SaveChangesAsync();
             return Ok(habit);
         }
-      
+
+        [HttpGet("MarkAsDone/{id}")]
+        public async Task<IActionResult> MarkAsDone(int id)
+        {
+            var user = await serviciosUsers.ObtenerUsuario();
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            var habit = await context.Habits.FindAsync(id);
+            if (habit is null)
+            {
+                return BadRequest();
+            }
+
+            habit.Done = true;
+            context.Habits.Update(habit);
+            await context.SaveChangesAsync();
+
+            return Ok(habit);
+        }
+
         [HttpDelete("DeleteHabit/{id:int}")]
         public async Task<ActionResult> DeleteHabit(int id)
         {
