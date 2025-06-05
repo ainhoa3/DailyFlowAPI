@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
     policy =>
     {
-        policy.WithOrigins("https://dailyflowapp.netlify.app")
+        policy.WithOrigins("http://localhost:4200")
               .AllowCredentials()
               .AllowAnyMethod()
               .AllowAnyHeader();

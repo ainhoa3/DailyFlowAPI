@@ -329,7 +329,7 @@ namespace BibliotecaAPI.Controllers.V1
                 return BadRequest();
             }
 
-            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Month == year)
+            var history = await context.Streaks.Where(s => s.userId == user.Id && s.date.Year == year)
                 .ToListAsync();
 
             var srtreakDTOs = mapper.Map<IEnumerable<StrikeDTO>>(history);

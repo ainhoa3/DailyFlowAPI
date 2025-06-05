@@ -27,6 +27,7 @@ namespace DailyFlow.Entities
         [Required]
         public _Environment _Environment { get; set; }
         public bool Done { get; set; }
+        public bool Scheduled { get; set; } = false;
         [Required]
         public required string UserId { get; set; }
 
@@ -35,14 +36,23 @@ namespace DailyFlow.Entities
         public bool IsTodays() // todays tasks are the ones with todays deu date or tomorrows deudate or the late ones
         {
             DateTime today = DateTime.Today;
-            bool todays = DeuDate == today || today.AddDays(1) == DeuDate;
-            return todays || IsLate();
+
+            //if task is scheduled the due date is the date where it must to appear
+            if (Scheduled)
+            {
+                return DeuDate == today;
+            }
+            else // if not the algorithm proceeds
+            {
+                bool todays = DeuDate == today || today.AddDays(1) == DeuDate;// today or tomorrow
+                return todays || IsLate();// or late tasks
+            }
 
         }
         public bool IsLate()// late tasks are the ones witch duedate is past but are steel not done
         {
             DateTime today = DateTime.Today;
-            return this.DeuDate.CompareTo(today) < 0;
+            return this.DeuDate.CompareTo(today) < 0 && Done == false;
         }
         public int DaysLeft()
         {

@@ -10,5 +10,6 @@ namespace DailyFlow.DTOs
         public DateTime DueDate { get; set; }
         public int Importance { get; set; }
         public float Priority { get; set; }
+        public bool Scheduled { get; set; } = false;
     }
 }

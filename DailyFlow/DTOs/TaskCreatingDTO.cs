@@ -10,6 +10,7 @@ namespace DailyFlow.DTOs
         public DateTime DueDate { get; set; }
         public int Importance { get; set; }
         public bool Done { get; set; } = false;
+        public bool Scheduled { get; set; } = false;
         public string? UserId {  get; set; }
     }
 }
