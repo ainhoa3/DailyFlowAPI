@@ -145,7 +145,7 @@ namespace DailyFlow.Controllers
             var previews = mapper.Map<IEnumerable<TaskPreviewDTO>>(filteredTasks);
             return Ok(previews);
         }
-
+        
 
         [HttpPut("UpdateTask/{id}")]
         public async Task<IActionResult> UpdateTask(int id, TaskUpdatingDTO taskUpdatingDTO)
@@ -190,8 +190,15 @@ namespace DailyFlow.Controllers
             {
                 return BadRequest();
             }
-
-            task.Done = true;
+            if(task.Done)
+            {
+                task.Done = false;
+            }
+            else
+            {
+                task.Done = true;
+            }
+                
             context.Tasks.Update(task);
             await context.SaveChangesAsync();
 

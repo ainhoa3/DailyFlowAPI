@@ -142,7 +142,14 @@ namespace DailyFlow.Controllers
                 return BadRequest();
             }
 
-            habit.Done = true;
+            if (habit.Done)
+            {
+                habit.Done = false;
+            }
+            else
+            {
+                habit.Done = true;
+            }
             context.Habits.Update(habit);
             await context.SaveChangesAsync();
 
