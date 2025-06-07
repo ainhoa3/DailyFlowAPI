@@ -138,7 +138,9 @@ namespace DailyFlow.Controllers
             var filteredTasks = tasks.Where(t => t.DaysLeft() >= 2 && t.DaysLeft() < 8)
                 // tasks from the day ufter tomorrow to a week(7 days) ufter
                 // tomorrow(8 days from today)
-                .OrderBy(t => t.CalcualatePriority()).ToList();
+                .Except(tasks) // Elimina las tareas de hoy
+                .OrderBy(t => t.CalcualatePriority())
+                .ToList();
 
             var previews = mapper.Map<IEnumerable<TaskPreviewDTO>>(filteredTasks);
             return Ok(previews);
