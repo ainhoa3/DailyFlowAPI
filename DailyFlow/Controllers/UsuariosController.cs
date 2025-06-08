@@ -198,7 +198,7 @@ namespace BibliotecaAPI.Controllers.V1
 
             // no strike is added if ther has already been 1 added today or there are steel tasks for today not done or there are habits for today not done
             if (
-                //user.LastStreak.Date == DateTime.Now.Date ||
+                user.LastStreak.Date == DateTime.Now.Date ||
                 tasksForToday.Any(t => t.Done != true) || habitsForToday.Any(t => t.Done != true))
             {
                return NoContent();
